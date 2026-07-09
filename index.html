@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Audio Feed Project</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #log { margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>Audio Stream Controller</h1>
+    <button id="live-mic-btn">Start Live Feed</button>
+    <div id="log">Status: Waiting for input...</div>
+
+    <script>
+        document.getElementById('live-mic-btn').addEventListener('click', () => {
+            const log = document.getElementById('log');
+            log.innerText = "Status: Connecting to audio stream...";
+            // We will add the audio logic here later
+        });
+    </script>
+</body>
+</html>
