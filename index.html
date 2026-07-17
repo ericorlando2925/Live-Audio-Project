@@ -2,29 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Live Audio Feed</title>
+    <title>Live Audio & Speech Decoder</title>
 </head>
 <body>
 
     <h1>My Live Audio Project</h1>
     
-    <!-- The button to trigger the process -->
     <button id="live-mic-btn">Start Microphone</button>
-    
-    <!-- The status display -->
     <p id="log">Status: Waiting for interaction...</p>
+    
+    <!-- This is where the words will appear -->
+    <h3>Transcription:</h3>
+    <div id="output" style="border: 1px solid #ccc; padding: 10px; min-height: 50px; background: #f9f9f9;"></div>
 
     <script>
-        document.getElementById('live-mic-btn').addEventListener('click', async () => {
-            const log = document.getElementById('log');
-            log.innerText = "Status: Requesting permission...";
+        const log = document.getElementById('log');
+        const output = document.getElementById('output');
+        
+        // Setup Speech Recognition (covers most browsers)
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        
+        recognition.continuous = true; // Keeps listening even if you pause
+        recognition.interimResults = true; // Shows words as they are being recognized
 
+        // When words are detected, update the screen
+        recognition.onresult = (event) => {
+            let transcript = "";
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                transcript += event.results[i][0].transcript;
+            }
+            output.innerText = transcript;
+        };
+
+        document.getElementById('live-mic-btn').addEventListener('click', async () => {
             try {
-                // Request microphone access
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                // 1. Get Mic Access
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                log.innerText = "Status: Listening...";
                 
-                log.innerText = "Status: Microphone connected!";
-                console.log("Audio stream captured:", stream);
+                // 2. Start the Speech Recognition engine
+                recognition.start();
                 
             } catch (err) {
                 log.innerText = "Status: Access denied or error.";
