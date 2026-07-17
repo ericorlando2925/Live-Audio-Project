@@ -9,9 +9,11 @@
     <h1>My Live Audio Project</h1>
     
     <button id="live-mic-btn">Start Microphone</button>
+    <!-- New Clear Button -->
+    <button id="clear-btn">Clear Text</button>
+    
     <p id="log">Status: Waiting for interaction...</p>
     
-    <!-- This is where the words will appear -->
     <h3>Transcription:</h3>
     <div id="output" style="border: 1px solid #ccc; padding: 10px; min-height: 50px; background: #f9f9f9;"></div>
 
@@ -19,35 +21,35 @@
         const log = document.getElementById('log');
         const output = document.getElementById('output');
         
-        // Setup Speech Recognition (covers most browsers)
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
         
-        recognition.continuous = true; // Keeps listening even if you pause
-        recognition.interimResults = true; // Shows words as they are being recognized
+        recognition.continuous = true;
+        recognition.interimResults = false; 
 
-        // When words are detected, update the screen
+        // Update to append text
         recognition.onresult = (event) => {
-            let transcript = "";
             for (let i = event.resultIndex; i < event.results.length; ++i) {
-                transcript += event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    output.innerText += " " + event.results[i][0].transcript;
+                }
             }
-            output.innerText = transcript;
         };
 
+        // Start Microphone Logic
         document.getElementById('live-mic-btn').addEventListener('click', async () => {
             try {
-                // 1. Get Mic Access
                 await navigator.mediaDevices.getUserMedia({ audio: true });
                 log.innerText = "Status: Listening...";
-                
-                // 2. Start the Speech Recognition engine
                 recognition.start();
-                
             } catch (err) {
                 log.innerText = "Status: Access denied or error.";
-                console.error("Error:", err);
             }
+        });
+
+        // New Clear Logic
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            output.innerText = "";
         });
     </script>
 </body>
